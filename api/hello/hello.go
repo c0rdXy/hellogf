@@ -1,15 +1,15 @@
-// =================================================================================
-// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
-// =================================================================================
-
 package hello
 
-import (
-	"context"
+type ParamsReq struct {
+	//g.Meta `path:"/params" method:"All"`
 
-	"hellogf/api/hello/v1"
-)
+	UserName string `p:"name" d:"张三"`
+	Password string
+	Age      int
+}
 
-type IHelloV1 interface {
-	Hello(ctx context.Context, req *v1.HelloReq) (res *v1.HelloRes, err error)
+type ParamsRes struct {
+	UserName string `p:"name" d:"张三" json:"user_name"`
+	Password string `json:"pwd"`
+	Age      int    `json:"age"`
 }
