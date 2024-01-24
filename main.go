@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "hellogf/internal/logic"
 	_ "hellogf/internal/packed"
 
 	"github.com/gogf/gf/v2/os/gctx"
