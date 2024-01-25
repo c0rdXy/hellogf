@@ -10,6 +10,8 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	hello2 "hellogf/api/hello"
+	"hellogf/internal/dao"
+	"hellogf/internal/model/entity"
 	"hellogf/internal/service"
 )
 
@@ -90,4 +92,85 @@ func (c *hello) Db(req *ghttp.Request) {
 	} else {
 		req.Response.WriteJson(err.Error())
 	}
+}
+
+func (c *hello) Tpl(req *ghttp.Request) {
+	html := `<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <ul>
+        <li>姓名：{{.name}}</li>
+        <li>性别：{{.gender}}</li>
+        <li>年龄：{{.age}}</li>
+    </ul>
+
+</body>
+</html>`
+
+	//req.Response.Writef(html, "张三", "男", 18)
+	req.Response.WriteTplContent(html, g.Map{
+		"name":   "张三",
+		"gender": "男",
+		"age":    18,
+	})
+
+}
+
+func (c *hello) Tpl1(req *ghttp.Request) {
+	var books []entity.Book
+	dao.Book.Ctx(req.Context()).Scan(&books)
+
+	req.Response.WriteTpl("/hello/index.html", g.Map{
+		"slice": g.Slice{"张三", "李四", "王五"},
+		"map": g.Map{
+			"name":   "张三",
+			"gender": "男",
+			"age":    18,
+		},
+		"books": books,
+		"num":   150,
+	})
+
+}
+
+func (c *hello) Tpl2(req *ghttp.Request) {
+	var books []entity.Book
+	dao.Book.Ctx(req.Context()).Scan(&books)
+
+	req.Response.WriteTpl("/hello/index1.html", g.Map{
+		"books": books,
+	})
+
+}
+
+func (c *hello) Upload(req *ghttp.Request) {
+	file := req.GetUploadFile("ufile")
+
+	if file != nil {
+		//req.Response.Writeln(file)
+		file.Filename = "test.png"
+		filename, err := file.Save("resource/public/upload/")
+		if err == nil {
+			req.Response.Writeln("/upload/" + filename)
+		} else {
+			req.Response.Writeln(err)
+		}
+	}
+}
+
+func (c *hello) Download(req *ghttp.Request) {
+	//req.Response.ServeFile("resource/public/upload/test.png")
+	//req.Response.ServeFileDownload("resource/public/upload/test.png")
+	req.Response.ServeFileDownload("resource/public/upload/test.png", "123.png")
+}
+
+func (c *hello) Valid(ctx context.Context, req *hello2.ValidReq) (res *hello2.ValidRes, err error) {
+
+	return
 }
